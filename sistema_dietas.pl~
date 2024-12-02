@@ -1,0 +1,35 @@
+% Hechos: Información sobre alimentos
+alimento('Manzana', 52, 0.3, 0.2, 14). % (nombre, calorías, proteínas, grasas, carbohidratos)
+alimento('Pechuga de pollo', 165, 31, 3.6, 0).
+alimento('Arroz integral', 123, 2.9, 1, 26).
+alimento('Espinacas', 23, 2.9, 0.4, 3.6).
+alimento('Yogur natural', 59, 10, 0.4, 3.6).
+
+% Hechos: Dietas predefinidas
+dieta('Dieta para Diabetes', ['Manzana', 'Pechuga de pollo', 'Espinacas', 'Yogur natural']).
+dieta('Dieta para Hipertensión', ['Arroz integral', 'Espinacas', 'Pechuga de pollo']).
+dieta('Dieta para Colesterol alto', ['Espinacas', 'Manzana', 'Yogur natural']).
+dieta('Dieta Balanceada', ['Arroz integral', 'Pechuga de pollo', 'Manzana']).
+
+% Hechos: Condiciones de salud y sus dietas recomendadas
+condicion_dieta('Diabetes', 'Dieta para Diabetes').
+condicion_dieta('Hipertensión', 'Dieta para Hipertensión').
+condicion_dieta('Colesterol alto', 'Dieta para Colesterol alto').
+condicion_dieta('Normal', 'Dieta Balanceada').
+
+% Regla: Recomendar una dieta completa en función de la condición de salud
+recomendar_dieta(Condicion, Dieta, Alimentos) :-
+    condicion_dieta(Condicion, Dieta),
+    dieta(Dieta, Alimentos).
+
+% Regla: Ajustar dietas según calorías objetivo
+ajustar_dieta(Alimentos, CaloriasObjetivo, DietaAjustada) :-
+    incluir_calorias(Alimentos, 0, CaloriasTotales),
+    CaloriasTotales =< CaloriasObjetivo,
+    DietaAjustada = Alimentos.
+
+incluir_calorias([], Calorias, Calorias).
+incluir_calorias([Alimento|Resto], CaloriasAcumuladas, CaloriasTotales) :-
+    alimento(Alimento, CaloriasAlimento, _, _, _),
+    CaloriasNuevas is CaloriasAcumuladas + CaloriasAlimento,
+    incluir_calorias(Resto, CaloriasNuevas, CaloriasTotales).
