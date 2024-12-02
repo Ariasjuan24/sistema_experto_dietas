@@ -235,8 +235,18 @@ def mostrar_info_sistema():
     Label(frame_experto2, text="Nombre: Mateo López\nEspecialidad: Lic. en nutrición deportiva\nInstagram: @mateolopeznutrition", 
           font=("Arial", 10), bg="#f0f8ff", justify=LEFT).pack(side=LEFT, padx=10)
 
-    # Botón para cerrar
-    Button(ventana_info, text="Cerrar", command=ventana_info.destroy, bg="#4682b4", fg="white").pack(pady=10)
+    # Botón para cerrar, con estilo mejorado
+    def on_enter_cerrar(boton):
+        boton.config(bg="#4169e1", font=("Arial", 12, "bold"))
+
+    def on_leave_cerrar(boton):
+        boton.config(bg="#4682b4", font=("Arial", 10))
+
+    btn_cerrar = Button(ventana_info, text="Cerrar", command=ventana_info.destroy, bg="#4682b4", fg="white", 
+                        relief="flat", width=20, height=2)
+    btn_cerrar.pack(pady=20)
+    btn_cerrar.bind("<Enter>", lambda e: on_enter_cerrar(btn_cerrar))
+    btn_cerrar.bind("<Leave>", lambda e: on_leave_cerrar(btn_cerrar))
 
     # Necesario para mantener referencias de las imágenes
     ventana_info.mainloop()
