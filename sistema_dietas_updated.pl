@@ -39,35 +39,33 @@ condicion_dieta('Normal', 'Dieta Balanceada').
 recomendar_dieta(Condicion, CaloriasObjetivo, Dieta, DietaAjustada) :-
     condicion_dieta(Condicion, Dieta),
     dieta(Dieta, Alimentos),
-    ajustar_dieta(Alimentos, CaloriasObjetivo, DietaAjustada).
+    ajustar_dieta_dinamica(Alimentos, CaloriasObjetivo, DietaAjustada).
 
-% Regla: Ajustar dietas según calorías objetivo
-ajustar_dieta(Alimentos, CaloriasObjetivo, DietaAjustada) :-
-    incluir_calorias(Alimentos, 0, CaloriasTotales),
+ajustar_dieta_dinamica(Alimentos, CaloriasObjetivo, DietaAjustada) :-
+    generar_subconjuntos(Alimentos, Subconjunto),
+    incluir_calorias(Subconjunto, 0, CaloriasTotales),
     CaloriasTotales =< CaloriasObjetivo,
-    DietaAjustada = Alimentos.
+    DietaAjustada = Subconjunto.
+
+% Nueva regla para mayor flexibilidad (un margen del 10%):
+ajustar_dieta_dinamica(Alimentos, CaloriasObjetivo, DietaAjustada) :-
+    generar_subconjuntos(Alimentos, Subconjunto),
+    incluir_calorias(Subconjunto, 0, CaloriasTotales),
+    CaloriasTotales =< CaloriasObjetivo * 1.10,
+    DietaAjustada = Subconjunto,
+    !.
+
+
+% Generar subconjuntos de una lista (todos los posibles)
+generar_subconjuntos([], []).
+generar_subconjuntos([Elem|Resto], [Elem|Subconjunto]) :-
+    generar_subconjuntos(Resto, Subconjunto).
+generar_subconjuntos([_|Resto], Subconjunto) :-
+    generar_subconjuntos(Resto, Subconjunto).
 
 % Calcular calorías totales de una lista de alimentos
-incluir_calorias([], Calorias, Calorias).
+incluir_calorias([], CaloriasAcumuladas, CaloriasAcumuladas).
 incluir_calorias([Alimento|Resto], CaloriasAcumuladas, CaloriasTotales) :-
-    alimento(Alimento, CaloriasAlimento, _, _, _),
-    CaloriasNuevas is CaloriasAcumuladas + CaloriasAlimento,
-    incluir_calorias(Resto, CaloriasNuevas, CaloriasTotales).
-
-% Regla: Sugerir alimentos adicionales si las calorías de la dieta ajustada son muy bajas
-sugerir_alimentos(AlimentosBase, CaloriasObjetivo, AlimentosFinales) :-
-    incluir_calorias(AlimentosBase, 0, CaloriasTotales),
-    CaloriasTotales < CaloriasObjetivo,
-    findall(Alimento, alimento(Alimento, _, _, _, _), TodosLosAlimentos),
-    seleccionar_alimentos(TodosLosAlimentos, AlimentosBase, CaloriasObjetivo, AlimentosFinales).
-
-% Regla para seleccionar alimentos adicionales que sumen calorías sin exceder el objetivo
-seleccionar_alimentos([], Alimentos, _, Alimentos).
-seleccionar_alimentos([Alimento|Resto], AlimentosActuales, CaloriasObjetivo, AlimentosFinales) :-
-    \+ member(Alimento, AlimentosActuales),
-    alimento(Alimento, CaloriasAlimento, _, _, _),
-    incluir_calorias(AlimentosActuales, CaloriasAcumuladas, _),
-    CaloriasAcumuladas + CaloriasAlimento =< CaloriasObjetivo,
-    seleccionar_alimentos(Resto, [Alimento|AlimentosActuales], CaloriasObjetivo, AlimentosFinales).
-seleccionar_alimentos([_|Resto], AlimentosActuales, CaloriasObjetivo, AlimentosFinales) :-
-    seleccionar_alimentos(Resto, AlimentosActuales, CaloriasObjetivo, AlimentosFinales).
+    alimento(Alimento, Calorias, _, _, _),
+    NuevaCaloriasAcumuladas is CaloriasAcumuladas + Calorias,
+    incluir_calorias(Resto, NuevaCaloriasAcumuladas, CaloriasTotales).
