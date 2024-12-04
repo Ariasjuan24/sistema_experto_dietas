@@ -146,6 +146,30 @@ def imprimir_dieta():
         messagebox.showerror("Error", f"No se pudo guardar el archivo PDF: {e}")
 
 
+# Función para mostrar la ventana de agradecimiento
+# Función para mostrar la ventana de agradecimiento
+def ventana_agradecimiento(ventana_principal):
+    # Crear ventana de agradecimiento
+    ventana_agradecer = Toplevel()
+    ventana_agradecer.title("Gracias por utilizar NutriAsistPro")
+    ventana_agradecer.geometry("400x200")  # Ajusta el tamaño de la ventana
+
+    # Título
+    Label(ventana_agradecer, text="¡Gracias por utilizar NutriAsistPro!", font=("Arial", 16, "bold")).pack(pady=30)
+
+    # Subtítulo
+    Label(ventana_agradecer, text="¡Nos vemos pronto!", font=("Arial", 12)).pack(pady=10)
+
+    # Botón para cerrar
+    Button(ventana_agradecer, text="Cerrar", command=ventana_agradecer.destroy, bg="#00796b", fg="white", font=("Arial", 12)).pack(pady=20)
+
+    # Cerrar ventana principal
+    ventana_principal.destroy()
+
+    # Mantener la ventana de agradecimiento abierta
+    ventana_agradecer.mainloop()
+
+
 def ventana_principal():
     global resultado_texto  # Declarar como global
     global nombre_entrada, edad_entrada, altura_entrada, peso_entrada  # Declarar también las demás entradas globales
@@ -213,6 +237,11 @@ def ventana_principal():
         bg="#00796b", 
         fg="white"
     ).grid(row=12, column=0, columnspan=2, pady=10)
+
+    # Botón para salir
+    Button(ventana, text="Salir", command=lambda: ventana_agradecimiento(ventana), 
+           font=("Arial", 12), bg="#00796b", fg="white").grid(row=13, column=0, columnspan=2, pady=10)
+
 
     # Ejecutar ventana principal
     ventana.mainloop()
