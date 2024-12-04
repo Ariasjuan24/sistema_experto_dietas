@@ -10,34 +10,31 @@ from reportlab.pdfgen import canvas
 import subprocess
 import os
 
-# Función para conectar a MySQL con manejo de errores mejorado
+# Conexión a MySQL
 def conectar_mysql():
-    try:
-        conexion = pymysql.connect(
-            host=os.getenv('DB_HOST', 'localhost'),
-            user=os.getenv('DB_USER', 'nutriologo'),
-            password=os.getenv('DB_PASSWORD', '123'),
-            database=os.getenv('DB_NAME', 'sistema_dietas')
-        )
-        return conexion
-    except pymysql.MySQLError as err:
-        messagebox.showerror("Error de Conexión", f"No se pudo conectar a la base de datos: {err}")
-        return None
+    return pymysql.connect(
+        host="localhost",
+        user="nutriologo",
+        password="123",
+        database="sistema_dietas"
+    )
 
 # Inicializar Prolog
 prolog = Prolog()
 prolog.consult("sistema_dietas.pl")
 
-# Función para calcular calorías objetivo mejorada
+# Función para calcular las calorías objetivo
 def calcular_calorias(edad, peso, altura, genero, nivel_actividad):
+    # Convertir altura de metros a centímetros
     altura_cm = altura * 100
-    
-    # Fórmula Mifflin-St Jeor más precisa
+
+    # Calcular TMB (Tasa Metabólica Basal)
     if genero == "Hombre":
         tmb = 10 * peso + 6.25 * altura_cm - 5 * edad + 5
-    else:
+    else:  # Mujer
         tmb = 10 * peso + 6.25 * altura_cm - 5 * edad - 161
 
+    # Multiplicar por el factor de actividad
     factores_actividad = {
         "Sedentario": 1.2,
         "Ligera actividad": 1.375,
@@ -48,120 +45,68 @@ def calcular_calorias(edad, peso, altura, genero, nivel_actividad):
     calorias_objetivo = tmb * factores_actividad.get(nivel_actividad, 1.2)
     return round(calorias_objetivo, 2)
 
-def validar_datos(nombre, edad, altura, peso, condicion, genero, nivel_actividad):
-    # Verificación de campos obligatorios
-    campos = {
-        "Nombre": nombre,
-        "Edad": edad,
-        "Altura": altura,
-        "Peso": peso,
-        "Género": genero,
-        "Nivel de Actividad": nivel_actividad
-    }
-
-    # Validar campos obligatorios
-    for campo, valor in campos.items():
-        if not valor or str(valor).strip() == "":
-            messagebox.showerror("Error de Validación", f"El campo {campo} no puede estar vacío")
-            return False
-
+# Función para guardar datos del usuario en la base de datos
+def guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objetivo):
     try:
-        # Conversión y validación de tipos
-        edad_int = int(edad)
-        altura_float = float(altura)
-        peso_float = float(peso)
+        conexion = conectar_mysql()
+        cursor = conexion.cursor()
+        consulta = """ 
+        INSERT INTO usuarios (nombre, edad, altura, peso, condiciones, dieta_recomendada, calorias_objetivo)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(consulta, (nombre, edad, altura, peso, condicion, dieta, calorias_objetivo))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    except Exception as e:
+        messagebox.showerror("Error", f"No se pudo guardar en la base de datos: {e}")
 
-        # Validaciones de rango
-        if edad_int < 1 or edad_int > 120:
-            messagebox.showerror("Error", "Edad debe estar entre 1 y 120 años")
-            return False
-
-        if altura_float < 0.5 or altura_float > 2.5:
-            messagebox.showerror("Error", "Altura debe estar entre 0.5 y 2.5 metros")
-            return False
-
-        if peso_float < 10 or peso_float > 500:
-            messagebox.showerror("Error", "Peso debe estar entre 10 y 500 kg")
-            return False
-
-    except ValueError:
-        messagebox.showerror("Error", "Por favor ingrese valores numéricos válidos")
-        return False
-
-    return True
-
+# Función para obtener la dieta recomendada
 def obtener_dieta():
-    # Limpiar resultado anterior
     resultado_texto.delete(1.0, "end")
-    
-    # Obtener valores de entrada
-    nombre = nombre_entrada.get().strip()
-    edad = edad_entrada.get().strip()
-    altura = altura_entrada.get().strip()
-    peso = peso_entrada.get().strip()
-    
-    # Obtener selecciones de los ComboBox
-    condicion = condicion_var.get() if condicion_var.get() else "Normal"
+    # Capturar datos
+    nombre = nombre_entrada.get()
+    edad = edad_entrada.get()
+    altura = altura_entrada.get()
+    peso = peso_entrada.get()
+    condicion = condicion_var.get()
     genero = genero_var.get()
     nivel_actividad = nivel_actividad_var.get()
 
-    # Validación completa de todos los campos
-    if not validar_datos(nombre, edad, altura, peso, condicion, genero, nivel_actividad):
-        return
-
+    # Validar entradas
     try:
         edad = int(edad)
         altura = float(altura)
         peso = float(peso)
     except ValueError:
-        messagebox.showerror("Error", "Por favor, ingrese datos numéricos válidos.")
+        messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
         return
 
-    # Calcular calorías
+    if not nombre or not condicion or not genero or not nivel_actividad:
+        messagebox.showerror("Error", "Por favor, complete todos los campos.")
+        return
+
+    # Calcular calorías objetivo
     calorias_objetivo = calcular_calorias(edad, peso, altura, genero, nivel_actividad)
     calorias_objetivo_var.set(f"{calorias_objetivo} kcal")
 
-    # Consulta a Prolog
-    calorias_objetivo_num = int(round(calorias_objetivo))
-    query = f"recomendar_dieta('{condicion}', {calorias_objetivo_num}, Dieta, DietaAjustada)"
-    
+    # Consultar Prolog para dieta recomendada
+    query = f"recomendar_dieta('{condicion}', {calorias_objetivo}, Dieta, DietaAjustada)"
     resultados = list(prolog.query(query))
 
     if resultados:
-        dieta = resultados[0].get("Dieta", "No disponible")
-        alimentos_ajustados = resultados[0].get("DietaAjustada", [])
-        
+        dieta = resultados[0]["Dieta"]
+        alimentos_ajustados = resultados[0]["DietaAjustada"]
+
         resultado_texto.insert("end", f"Dieta recomendada: {dieta}\n")
         resultado_texto.insert("end", "Alimentos ajustados:\n")
         for alimento in alimentos_ajustados:
             resultado_texto.insert("end", f"- {alimento}\n")
     else:
         resultado_texto.insert("end", "No se encontraron recomendaciones para esta condición.\n")
-        dieta = "No disponible"
 
-    # Guardar usuario
+    # Guardar en base de datos
     guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objetivo)
-
-    
-# Función para guardar usuario con manejo de errores mejorado
-def guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objetivo):
-    try:
-        with conectar_mysql() as conexion:
-            with conexion.cursor() as cursor:
-                consulta = """ 
-                INSERT INTO usuarios 
-                (nombre, edad, altura, peso, condiciones, dieta_recomendada, calorias_objetivo)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """
-                
-                cursor.execute(consulta, (
-                    nombre, edad, altura, peso, 
-                    condicion, dieta, calorias_objetivo
-                ))
-                conexion.commit()
-                messagebox.showinfo("Éxito", "Usuario guardado correctamente.")
-    except Exception as e:
-        messagebox.showerror("Error de Base de Datos", f"No se pudo guardar: {e}")
 
 # Función para imprimir dieta
 def imprimir_dieta():
@@ -199,98 +144,69 @@ def imprimir_dieta():
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo guardar el archivo PDF: {e}")
 
-# Función para la ventana principal
-def ventana_principal():
-    global calorias_objetivo_var, nombre_entrada, edad_entrada, altura_entrada, peso_entrada
-    global condicion_var, genero_var, nivel_actividad_var, resultado_texto
 
-    ventana = Tk()
-    ventana.title("Sistema Experto de Dietas")
-    ventana.config(bg="#e0f7fa")
+# Crear ventana principal
+ventana = Tk()
+ventana.title("Sistema Experto de Dietas")
 
-    niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
-    condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal"]
+# Variables globales
+niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
+condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal"]
 
-    bienvenida = Label(ventana, text="Bienvenido al Sistema Experto de Dietas", 
-                       font=("Arial", 16, "bold"), fg="#00796b", bg="#e0f7fa")
-    bienvenida.grid(row=0, column=0, columnspan=2, pady=20)
+# Campos de entrada
+Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
+nombre_entrada = Entry(ventana)
+nombre_entrada.grid(row=0, column=1, padx=10, pady=10)
 
-    campos = [
-        ("Nombre:", nombre_entrada := Entry(ventana, font=("Arial", 12))),
-        ("Edad:", edad_entrada := Entry(ventana, font=("Arial", 12))),
-        ("Altura (m):", altura_entrada := Entry(ventana, font=("Arial", 12))),
-        ("Peso (kg):", peso_entrada := Entry(ventana, font=("Arial", 12)))
-    ]
+Label(ventana, text="Edad:").grid(row=1, column=0, padx=10, pady=10)
+edad_entrada = Entry(ventana)
+edad_entrada.grid(row=1, column=1, padx=10, pady=10)
 
-    # Validaciones en tiempo real
-    vcmd_nombre = (ventana.register(lambda P: len(P) <= 50), '%P')
-    vcmd_numerico = (ventana.register(lambda P: P.replace('.','',1).isdigit() or P == ""), '%P')
-    
-    nombre_entrada.config(validate="key", validatecommand=vcmd_nombre)
-    edad_entrada.config(validate="key", validatecommand=(ventana.register(lambda P: P.isdigit() or P == ""), '%P'))
-    altura_entrada.config(validate="key", validatecommand=vcmd_numerico)
-    peso_entrada.config(validate="key", validatecommand=vcmd_numerico)
+Label(ventana, text="Altura (m):").grid(row=2, column=0, padx=10, pady=10)
+altura_entrada = Entry(ventana)
+altura_entrada.grid(row=2, column=1, padx=10, pady=10)
 
-    # Configurar campos
-    for i, (texto, entrada) in enumerate(campos, 1):
-        Label(ventana, text=texto, bg="#e0f7fa", font=("Arial", 12)).grid(row=i, column=0, sticky="w", padx=10)
-        entrada.grid(row=i, column=1, padx=10)
+Label(ventana, text="Peso (kg):").grid(row=3, column=0, padx=10, pady=10)
+peso_entrada = Entry(ventana)
+peso_entrada.grid(row=3, column=1, padx=10, pady=10)
 
-    # Género
-    Label(ventana, text="Género:", bg="#e0f7fa", font=("Arial", 12)).grid(row=5, column=0, sticky="w", padx=10)
-    genero_var = StringVar(value="Hombre")  # Valor por defecto vacío
-    genero_menu = ttk.Combobox(ventana, textvariable=genero_var, 
-                                values=["Hombre", "Mujer"], 
-                                state="readonly", 
-                                font=("Arial", 12))
-    genero_menu.grid(row=5, column=1, padx=10)
+Label(ventana, text="Condición de Salud:").grid(row=4, column=0, padx=10, pady=10)
+condicion_var = StringVar(value="Hipertensión")
+condicion_menu = ttk.Combobox(ventana, textvariable=condicion_var, values=condiciones_salud, state="readonly")
+condicion_menu.grid(row=4, column=1, padx=10, pady=10)
 
-    # Nivel de actividad
-    Label(ventana, text="Nivel de actividad:", bg="#e0f7fa", font=("Arial", 12)).grid(row=6, column=0, sticky="w", padx=10)
-    nivel_actividad_var = StringVar(value="Sedentario")  # Valor por defecto vacío
-    nivel_actividad_menu = ttk.Combobox(ventana, 
-                                        textvariable=nivel_actividad_var, 
-                                        values=niveles_actividad, 
-                                        state="readonly", 
-                                        font=("Arial", 12))
-    nivel_actividad_menu.grid(row=6, column=1, padx=10)
+Label(ventana, text="Género:").grid(row=5, column=0, padx=10, pady=10)
+genero_var = StringVar(value="Hombre")
+genero_menu = ttk.Combobox(ventana, textvariable=genero_var, values=["Hombre", "Mujer"], state="readonly")
+genero_menu.grid(row=5, column=1, padx=10, pady=10)
 
-    # Condición de salud
-    Label(ventana, text="Condición de salud:", bg="#e0f7fa", font=("Arial", 12)).grid(row=7, column=0, sticky="w", padx=10)
-    condicion_var = StringVar(value="Normal")  # Valor por defecto "Normal"
-    condicion_menu = ttk.Combobox(ventana, 
-                                  textvariable=condicion_var, 
-                                  values=condiciones_salud, 
-                                  state="readonly", 
-                                  font=("Arial", 12))
-    condicion_menu.grid(row=7, column=1, padx=10)
+Label(ventana, text="Nivel de Actividad:").grid(row=6, column=0, padx=10, pady=10)
+nivel_actividad_var = StringVar(value="Sedentario")
+nivel_actividad_menu = ttk.Combobox(ventana, textvariable=nivel_actividad_var, values=niveles_actividad, state="readonly")
+nivel_actividad_menu.grid(row=6, column=1, padx=10, pady=10)
 
-    # Botón Obtener Dieta
-    Button(ventana, text="Obtener Dieta", 
-           command=obtener_dieta, 
-           font=("Arial", 12), 
-           bg="#00796b", 
-           fg="white").grid(row=8, column=0, columnspan=2, pady=10)
+Label(ventana, text="Calorías Objetivo:").grid(row=7, column=0, padx=10, pady=10)
+calorias_objetivo_var = StringVar()
+calorias_objetivo_label = Label(ventana, textvariable=calorias_objetivo_var)
+calorias_objetivo_label.grid(row=7, column=1, padx=10, pady=10)
 
-    # Calorías objetivo
-    Label(ventana, text="Calorías objetivo:", bg="#e0f7fa", font=("Arial", 12)).grid(row=9, column=0, sticky="w", padx=10)
-    calorias_objetivo_var = StringVar()
-    Label(ventana, textvariable=calorias_objetivo_var, bg="#e0f7fa", font=("Arial", 12)).grid(row=9, column=1)
+# Botón para obtener dieta
+Button(ventana, text="Obtener Dieta", command=obtener_dieta).grid(row=8, column=0, columnspan=2, pady=10)
 
-    # Resultado de la dieta
-    Label(ventana, text="Resultado de la dieta:", bg="#e0f7fa", font=("Arial", 12)).grid(row=10, column=0, columnspan=2, pady=10)
+# Área de texto para mostrar resultados
+resultado_texto = Text(ventana, width=50, height=10)
+resultado_texto.grid(row=9, column=0, columnspan=2, padx=10, pady=10)
 
-    resultado_texto = Text(ventana, height=10, width=50, font=("Arial", 12))
-    resultado_texto.grid(row=11, column=0, columnspan=2, padx=10)
-
-    # Botón Imprimir PDF
-    Button(ventana, text="Imprimir PDF", 
+ # Botón Imprimir PDF
+Button(ventana, text="Imprimir PDF", 
            command=imprimir_dieta, 
            font=("Arial", 12), 
            bg="#00796b", 
            fg="white").grid(row=12, column=0, columnspan=2, pady=10)
 
-    ventana.mainloop()
+# Ejecutar ventana
+ventana.mainloop()
+
 
 def mostrar_info_sistema():
     # Crear ventana de información
