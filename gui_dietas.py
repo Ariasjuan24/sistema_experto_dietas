@@ -61,7 +61,6 @@ def guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objet
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo guardar en la base de datos: {e}")
 
-# Función para obtener la dieta recomendada
 def obtener_dieta():
     resultado_texto.delete(1.0, "end")
     # Capturar datos
@@ -82,6 +81,7 @@ def obtener_dieta():
         messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
         return
 
+    # Validar que los campos no estén vacíos
     if not nombre or not condicion or not genero or not nivel_actividad:
         messagebox.showerror("Error", "Por favor, complete todos los campos.")
         return
@@ -107,6 +107,7 @@ def obtener_dieta():
 
     # Guardar en base de datos
     guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objetivo)
+
 
 # Función para imprimir dieta
 def imprimir_dieta():
@@ -145,67 +146,76 @@ def imprimir_dieta():
         messagebox.showerror("Error", f"No se pudo guardar el archivo PDF: {e}")
 
 
-# Crear ventana principal
-ventana = Tk()
-ventana.title("Sistema Experto de Dietas")
+def ventana_principal():
+    global resultado_texto  # Declarar como global
+    global nombre_entrada, edad_entrada, altura_entrada, peso_entrada  # Declarar también las demás entradas globales
+    global condicion_var, genero_var, nivel_actividad_var, calorias_objetivo_var  # Variables necesarias
 
-# Variables globales
-niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
-condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal"]
+    ventana_bienvenida.destroy()  # Cerrar la ventana de bienvenida
 
-# Campos de entrada
-Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
-nombre_entrada = Entry(ventana)
-nombre_entrada.grid(row=0, column=1, padx=10, pady=10)
+    # Crear la ventana principal
+    ventana = Tk()
+    ventana.title("Sistema Experto de Dietas")
 
-Label(ventana, text="Edad:").grid(row=1, column=0, padx=10, pady=10)
-edad_entrada = Entry(ventana)
-edad_entrada.grid(row=1, column=1, padx=10, pady=10)
+    # Variables globales
+    niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
+    condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal"]
 
-Label(ventana, text="Altura (m):").grid(row=2, column=0, padx=10, pady=10)
-altura_entrada = Entry(ventana)
-altura_entrada.grid(row=2, column=1, padx=10, pady=10)
+    # Campos de entrada
+    Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
+    nombre_entrada = Entry(ventana)
+    nombre_entrada.grid(row=0, column=1, padx=10, pady=10)
 
-Label(ventana, text="Peso (kg):").grid(row=3, column=0, padx=10, pady=10)
-peso_entrada = Entry(ventana)
-peso_entrada.grid(row=3, column=1, padx=10, pady=10)
+    Label(ventana, text="Edad:").grid(row=1, column=0, padx=10, pady=10)
+    edad_entrada = Entry(ventana)
+    edad_entrada.grid(row=1, column=1, padx=10, pady=10)
 
-Label(ventana, text="Condición de Salud:").grid(row=4, column=0, padx=10, pady=10)
-condicion_var = StringVar(value="Hipertensión")
-condicion_menu = ttk.Combobox(ventana, textvariable=condicion_var, values=condiciones_salud, state="readonly")
-condicion_menu.grid(row=4, column=1, padx=10, pady=10)
+    Label(ventana, text="Altura (m):").grid(row=2, column=0, padx=10, pady=10)
+    altura_entrada = Entry(ventana)
+    altura_entrada.grid(row=2, column=1, padx=10, pady=10)
 
-Label(ventana, text="Género:").grid(row=5, column=0, padx=10, pady=10)
-genero_var = StringVar(value="Hombre")
-genero_menu = ttk.Combobox(ventana, textvariable=genero_var, values=["Hombre", "Mujer"], state="readonly")
-genero_menu.grid(row=5, column=1, padx=10, pady=10)
+    Label(ventana, text="Peso (kg):").grid(row=3, column=0, padx=10, pady=10)
+    peso_entrada = Entry(ventana)
+    peso_entrada.grid(row=3, column=1, padx=10, pady=10)
 
-Label(ventana, text="Nivel de Actividad:").grid(row=6, column=0, padx=10, pady=10)
-nivel_actividad_var = StringVar(value="Sedentario")
-nivel_actividad_menu = ttk.Combobox(ventana, textvariable=nivel_actividad_var, values=niveles_actividad, state="readonly")
-nivel_actividad_menu.grid(row=6, column=1, padx=10, pady=10)
+    Label(ventana, text="Condición de Salud:").grid(row=4, column=0, padx=10, pady=10)
+    condicion_var = StringVar(value="Hipertensión")
+    condicion_menu = ttk.Combobox(ventana, textvariable=condicion_var, values=condiciones_salud, state="readonly")
+    condicion_menu.grid(row=4, column=1, padx=10, pady=10)
 
-Label(ventana, text="Calorías Objetivo:").grid(row=7, column=0, padx=10, pady=10)
-calorias_objetivo_var = StringVar()
-calorias_objetivo_label = Label(ventana, textvariable=calorias_objetivo_var)
-calorias_objetivo_label.grid(row=7, column=1, padx=10, pady=10)
+    Label(ventana, text="Género:").grid(row=5, column=0, padx=10, pady=10)
+    genero_var = StringVar(value="Hombre")
+    genero_menu = ttk.Combobox(ventana, textvariable=genero_var, values=["Hombre", "Mujer"], state="readonly")
+    genero_menu.grid(row=5, column=1, padx=10, pady=10)
 
-# Botón para obtener dieta
-Button(ventana, text="Obtener Dieta", command=obtener_dieta).grid(row=8, column=0, columnspan=2, pady=10)
+    Label(ventana, text="Nivel de Actividad:").grid(row=6, column=0, padx=10, pady=10)
+    nivel_actividad_var = StringVar(value="Sedentario")
+    nivel_actividad_menu = ttk.Combobox(ventana, textvariable=nivel_actividad_var, values=niveles_actividad, state="readonly")
+    nivel_actividad_menu.grid(row=6, column=1, padx=10, pady=10)
 
-# Área de texto para mostrar resultados
-resultado_texto = Text(ventana, width=50, height=10)
-resultado_texto.grid(row=9, column=0, columnspan=2, padx=10, pady=10)
+    Label(ventana, text="Calorías Objetivo:").grid(row=7, column=0, padx=10, pady=10)
+    calorias_objetivo_var = StringVar()
+    calorias_objetivo_label = Label(ventana, textvariable=calorias_objetivo_var)
+    calorias_objetivo_label.grid(row=7, column=1, padx=10, pady=10)
 
- # Botón Imprimir PDF
-Button(ventana, text="Imprimir PDF", 
-           command=imprimir_dieta, 
-           font=("Arial", 12), 
-           bg="#00796b", 
-           fg="white").grid(row=12, column=0, columnspan=2, pady=10)
+    # Botón para obtener dieta
+    Button(ventana, text="Obtener Dieta", command=obtener_dieta).grid(row=8, column=0, columnspan=2, pady=10)
 
-# Ejecutar ventana
-ventana.mainloop()
+    # Área de texto para mostrar resultados
+    resultado_texto = Text(ventana, width=50, height=10)  # Ahora es global
+    resultado_texto.grid(row=9, column=0, columnspan=2, padx=10, pady=10)
+
+    # Botón Imprimir PDF
+    Button(
+        ventana, text="Imprimir PDF", 
+        command=imprimir_dieta, 
+        font=("Arial", 12), 
+        bg="#00796b", 
+        fg="white"
+    ).grid(row=12, column=0, columnspan=2, pady=10)
+
+    # Ejecutar ventana principal
+    ventana.mainloop()
 
 
 def mostrar_info_sistema():
