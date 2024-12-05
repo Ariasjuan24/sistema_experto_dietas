@@ -198,45 +198,52 @@ def ventana_principal():
     # Crear la ventana principal
     ventana = Tk()
     ventana.title("Sistema Experto de Dietas")
+    ventana.geometry("425x700")
+    ventana.configure(bg="#e0f7fa")
+
 
     # Variables globales
     niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
     condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal",
                         "DASH","Anti-inflamatoria", "Baja en carbohidratos"]
+    
+    # Estilo de etiquetas y entradas
+    label_style = {'font': ('Arial', 12), 'bg': '#f0f4f8'}
+    entry_style = {'font': ('Arial', 12), 'width': 20}
 
     # Campos de entrada
-    Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
+    Label(ventana, text="Nombre:", **label_style).grid(row=0, column=0, padx=10, pady=10, sticky="e")
     nombre_entrada = Entry(ventana)
     nombre_entrada.grid(row=0, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Edad:").grid(row=1, column=0, padx=10, pady=10)
+    Label(ventana, text="Edad:", **label_style).grid(row=1, column=0, padx=10, pady=10, sticky="e")
     edad_entrada = Entry(ventana)
     edad_entrada.grid(row=1, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Altura (m):").grid(row=2, column=0, padx=10, pady=10)
+    Label(ventana, text="Altura (m):", **label_style).grid(row=2, column=0, padx=10, pady=10, sticky="e")
     altura_entrada = Entry(ventana)
     altura_entrada.grid(row=2, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Peso (kg):").grid(row=3, column=0, padx=10, pady=10)
+    Label(ventana, text="Peso (kg):", **label_style).grid(row=3, column=0, padx=10, pady=10, sticky="e")
     peso_entrada = Entry(ventana)
     peso_entrada.grid(row=3, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Dieta para:").grid(row=4, column=0, padx=10, pady=10)
+    Label(ventana, text="Dieta para:", **label_style).grid(row=4, column=0, padx=10, pady=10, sticky="e")
     condicion_var = StringVar(value="Hipertensión")
     condicion_menu = ttk.Combobox(ventana, textvariable=condicion_var, values=condiciones_salud, state="readonly")
     condicion_menu.grid(row=4, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Género:").grid(row=5, column=0, padx=10, pady=10)
+    Label(ventana, text="Género:", **label_style).grid(row=5, column=0, padx=10, pady=10, sticky="e")
     genero_var = StringVar(value="Hombre")
     genero_menu = ttk.Combobox(ventana, textvariable=genero_var, values=["Hombre", "Mujer"], state="readonly")
     genero_menu.grid(row=5, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Nivel de Actividad:").grid(row=6, column=0, padx=10, pady=10)
+    Label(ventana, text="Nivel de Actividad:", **label_style).grid(row=6, column=0, padx=10, pady=10, sticky="e")
     nivel_actividad_var = StringVar(value="Sedentario")
     nivel_actividad_menu = ttk.Combobox(ventana, textvariable=nivel_actividad_var, values=niveles_actividad, state="readonly")
     nivel_actividad_menu.grid(row=6, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Calorías Objetivo:").grid(row=7, column=0, padx=10, pady=10)
+    Label(ventana, text="Calorías Objetivo:", **label_style).grid(row=7, column=0, padx=10, pady=10, sticky="e")
     calorias_objetivo_var = StringVar()
     calorias_objetivo_label = Label(ventana, textvariable=calorias_objetivo_var)
     calorias_objetivo_label.grid(row=7, column=1, padx=10, pady=10)
@@ -354,7 +361,7 @@ def mostrar_info_sistema():
 # Crear la ventana de bienvenida
 ventana_bienvenida = Tk()
 ventana_bienvenida.title("Bienvenida")
-ventana_bienvenida.geometry("600x400")  # Ventana más amplia para dar mejor sensación
+ventana_bienvenida.geometry("600x550")  # Ventana más amplia para dar mejor sensación
 ventana_bienvenida.configure(bg="#e0f7fa")  # Fondo de color suave
 
 # Etiqueta de bienvenida con estilo
