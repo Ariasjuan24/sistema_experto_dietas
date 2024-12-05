@@ -63,6 +63,7 @@ def guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objet
 
 def obtener_dieta():
     resultado_texto.delete(1.0, "end")
+    
     # Capturar datos
     nombre = nombre_entrada.get()
     edad = edad_entrada.get()
@@ -98,16 +99,34 @@ def obtener_dieta():
         dieta = resultados[0]["Dieta"]
         alimentos_ajustados = resultados[0]["DietaAjustada"]
 
+        # Mostrar dieta recomendada
         resultado_texto.insert("end", f"Dieta recomendada: {dieta}\n")
         resultado_texto.insert("end", "Alimentos ajustados:\n")
         for alimento in alimentos_ajustados:
             resultado_texto.insert("end", f"- {alimento}\n")
+
     else:
-        resultado_texto.insert("end", "No se encontraron recomendaciones para esta condición.\n")
+        # Si no se encuentra una dieta, proporcionar una recomendación predeterminada
+        resultado_texto.insert("end", "No se encontraron recomendaciones específicas para esta condición.\n")
+        resultado_texto.insert("end", "Recomendación estándar basada en tus datos:\n")
+        
+        # Generar una recomendación estándar en función de la condición, calorías, etc.
+        dieta_estandar = "Dieta equilibrada: Incluye una variedad de alimentos saludables como frutas, vegetales, proteínas magras y granos integrales."
+        resultado_texto.insert("end", f"- {dieta_estandar}\n")
+        
+        # También puedes generar alimentos ajustados si es necesario
+        alimentos_estandar = [
+            "Frutas: Manzanas, naranjas, plátanos",
+            "Verduras: Espinacas, brócoli, zanahorias",
+            "Proteínas: Pechuga de pollo, pescado, tofu",
+            "Granos: Arroz integral, quinoa, avena"
+        ]
+        
+        for alimento in alimentos_estandar:
+            resultado_texto.insert("end", f"- {alimento}\n")
 
-    # Guardar en base de datos
-    guardar_usuario(nombre, edad, altura, peso, condicion, dieta, calorias_objetivo)
-
+    # Guardar en la base de datos si se ha generado una recomendación, incluso si es la predeterminada
+    guardar_usuario(nombre, edad, altura, peso, condicion, dieta_estandar if not resultados else dieta, calorias_objetivo)
 
 # Función para imprimir dieta
 def imprimir_dieta():
@@ -147,7 +166,6 @@ def imprimir_dieta():
 
 
 # Función para mostrar la ventana de agradecimiento
-# Función para mostrar la ventana de agradecimiento
 def ventana_agradecimiento(ventana_principal):
     # Crear ventana de agradecimiento
     ventana_agradecer = Toplevel()
@@ -183,7 +201,8 @@ def ventana_principal():
 
     # Variables globales
     niveles_actividad = ["Sedentario", "Ligera actividad", "Actividad moderada", "Alta actividad", "Muy intensa"]
-    condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal"]
+    condiciones_salud = ["Hipertensión", "Diabetes", "Obesidad", "Colesterol alto", "Aumento muscular", "Vegano", "Normal",
+                        "DASH","Anti-inflamatoria", "Baja en carbohidratos"]
 
     # Campos de entrada
     Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
@@ -202,7 +221,7 @@ def ventana_principal():
     peso_entrada = Entry(ventana)
     peso_entrada.grid(row=3, column=1, padx=10, pady=10)
 
-    Label(ventana, text="Condición de Salud:").grid(row=4, column=0, padx=10, pady=10)
+    Label(ventana, text="Dieta para:").grid(row=4, column=0, padx=10, pady=10)
     condicion_var = StringVar(value="Hipertensión")
     condicion_menu = ttk.Combobox(ventana, textvariable=condicion_var, values=condiciones_salud, state="readonly")
     condicion_menu.grid(row=4, column=1, padx=10, pady=10)
