@@ -158,7 +158,7 @@ def imprimir_dieta():
         pdf.setFont("Helvetica", 12)
         
         # Título y línea divisoria
-        pdf.drawString(30, 750, "Sistema Experto de Dietas - Recomendación Personalizada")
+        pdf.drawString(30, 750, "NutriAsistPro - Recomendación Personalizada")
         pdf.line(30, 745, 580, 745)
         
         y = 720

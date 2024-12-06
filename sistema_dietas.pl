@@ -1,7 +1,6 @@
 % Hechos: Información sobre alimentos
 % alimento(Nombre, Calorías por 100g, Proteínas (g), Grasas (g), Carbohidratos (g))
 alimento('Manzana', 52, 0.3, 0.2, 14).
-alimento('Pechuga de pollo', 165, 31, 3.6, 0).
 alimento('Arroz integral', 123, 2.9, 1, 26).
 alimento('Espinacas', 23, 2.9, 0.4, 3.6).
 alimento('Yogur natural', 59, 10, 0.4, 3.6).
