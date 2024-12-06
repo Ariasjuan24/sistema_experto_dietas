@@ -193,9 +193,6 @@ def imprimir_dieta():
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo guardar el archivo PDF: {e}")
 
-
-
-# Función para mostrar la ventana de agradecimiento
 def ventana_agradecimiento(ventana_principal):
     # Crear ventana de agradecimiento
     ventana_agradecer = Toplevel()
@@ -216,7 +213,6 @@ def ventana_agradecimiento(ventana_principal):
 
     # Mantener la ventana de agradecimiento abierta
     ventana_agradecer.mainloop()
-
 
 def ventana_principal():
     global resultado_texto  # Declarar como global
@@ -298,7 +294,6 @@ def ventana_principal():
     Button(ventana, text="Salir", command=lambda: ventana_agradecimiento(ventana), 
            font=("Arial", 12), bg="#00796b", fg="white").grid(row=13, column=0, columnspan=2, pady=10)
 
-
     # Ejecutar ventana principal
     ventana.mainloop()
 
@@ -307,7 +302,7 @@ def mostrar_info_sistema():
     # Crear ventana de información
     ventana_info = Toplevel()
     ventana_info.title("Información del Sistema")
-    ventana_info.geometry("600x500")  # Ajusta el tamaño si es necesario
+    ventana_info.geometry("600x650") 
     ventana_info.configure(bg="#f0f8ff")
 
     # Título principal
