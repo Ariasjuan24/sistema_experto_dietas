@@ -172,7 +172,7 @@ def imprimir_dieta():
         y -= 20
         pdf.drawString(30, y, f"Peso: {peso} kg")
         y -= 20
-        pdf.drawString(30, y, f"Condición de Salud: {condicion}")
+        pdf.drawString(30, y, f"Tipo de dieta: {condicion}")
         y -= 20
         pdf.drawString(30, y, f"Calorías Objetivo: {calorias_objetivo}")
         y -= 40  # Espacio antes de la dieta recomendada
