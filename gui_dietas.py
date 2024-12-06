@@ -145,12 +145,41 @@ def imprimir_dieta():
         return
 
     try:
+        # Obtener datos del usuario
+        nombre = nombre_entrada.get()
+        edad = edad_entrada.get()
+        altura = altura_entrada.get()
+        peso = peso_entrada.get()
+        condicion = condicion_var.get()
+        calorias_objetivo = calorias_objetivo_var.get()
+
+        # Crear el PDF
         pdf = canvas.Canvas(archivo, pagesize=letter)
         pdf.setFont("Helvetica", 12)
+        
+        # Título y línea divisoria
         pdf.drawString(30, 750, "Sistema Experto de Dietas - Recomendación Personalizada")
         pdf.line(30, 745, 580, 745)
         
         y = 720
+        
+        # Imprimir datos del usuario
+        pdf.drawString(30, y, f"Nombre: {nombre}")
+        y -= 20
+        pdf.drawString(30, y, f"Edad: {edad}")
+        y -= 20
+        pdf.drawString(30, y, f"Altura: {altura} m")
+        y -= 20
+        pdf.drawString(30, y, f"Peso: {peso} kg")
+        y -= 20
+        pdf.drawString(30, y, f"Condición de Salud: {condicion}")
+        y -= 20
+        pdf.drawString(30, y, f"Calorías Objetivo: {calorias_objetivo}")
+        y -= 40  # Espacio antes de la dieta recomendada
+        
+        # Imprimir contenido de la dieta
+        pdf.drawString(30, y, "Dieta recomendada:")
+        y -= 20
         for linea in dieta_contenido.splitlines():
             pdf.drawString(30, y, linea)
             y -= 20
@@ -163,6 +192,7 @@ def imprimir_dieta():
         messagebox.showinfo("Éxito", f"Dieta guardada como PDF: {archivo}")
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo guardar el archivo PDF: {e}")
+
 
 
 # Función para mostrar la ventana de agradecimiento

@@ -63,21 +63,43 @@ alimento('Trucha', 148, 19.5, 8.1, 0).
 alimento('Uvas', 69, 0.7, 0.2, 18.1).
 alimento('Yogur natural', 59, 10, 0.4, 3.6).
 alimento('Zanahoria', 41, 0.9, 0.2, 9.6).
+alimento('Albahaca', 23, 2.2, 0.6, 2.7).
+alimento('Almendra', 576, 21, 49, 22).
+alimento('Apio', 16, 0.7, 0.2, 3.2).
+alimento('Camarones', 85, 18, 1.7, 0).
+alimento('Cebolla', 40, 1.1, 0.1, 9.3).
+alimento('Cereal de avena', 389, 16.9, 6.9, 66.3).
+alimento('Chía', 486, 16.5, 30.7, 42.1).
+alimento('Coco', 354, 3.3, 33.5, 15.2).
+alimento('Dátiles', 277, 1.8, 0.2, 75).
+alimento('Garbanzos', 164, 8.9, 2.6, 27.4).
+alimento('Guisantes', 81, 5.4, 0.4, 14.5).
+alimento('Habas', 88, 7.6, 0.4, 16.3).
+alimento('Huevo de codorniz', 158, 13, 11, 1.1).
+alimento('Lentejas', 116, 9, 0.4, 20).
+alimento('Manteca de cerdo', 902, 0, 100, 0).
+alimento('Nueces', 654, 15.2, 65.2, 13.7).
+alimento('Pechuga de pollo', 165, 31, 3.6, 0).
+alimento('Pistachos', 562, 20, 45, 28).
+alimento('Salmón', 206, 22, 13, 0).
+alimento('Tofu', 144, 15, 9, 3.9).
+alimento('Trucha', 148, 19.5, 8.1, 0).
 
 % Hechos: Dietas predefinidas
-% dieta(Nombre de la dieta, Lista de alimentos)
-dieta('Dieta para Diabetes', ['Manzana', 'Pechuga de pollo', 'Espinacas', 'Yogur natural', 'Brócoli']).
-dieta('Dieta para Hipertensión', ['Arroz integral', 'Espinacas', 'Pechuga de pollo', 'Plátano', 'Brócoli']).
-dieta('Dieta para Colesterol alto', ['Espinacas', 'Manzana', 'Yogur natural', 'Salmón', 'Avena']).
-dieta('Dieta Balanceada', ['Arroz integral', 'Pechuga de pollo', 'Manzana', 'Huevos', 'Quinoa']).
-dieta('Dieta para Pérdida de Peso', ['Espinacas', 'Brócoli', 'Huevos', 'Manzana', 'Leche descremada']).
-dieta('Dieta para Aumento de Masa Muscular', ['Pechuga de pollo', 'Huevos', 'Quinoa', 'Leche descremada', 'Salmón']).
-dieta('Dieta Vegana', ['Avena', 'Almendras', 'Espinacas', 'Quinoa', 'Brócoli']).
-dieta('Dieta Mediterránea', ['Salmón', 'Aceite de oliva', 'Brócoli', 'Manzana', 'Almendras']).
-dieta('Dieta DASH', ['Espinacas', 'Pechuga de pollo', 'Yogur natural', 'Brócoli', 'Arroz integral']).
-dieta('Dieta Cetogénica', ['Pechuga de pollo', 'Huevos', 'Aguacate', 'Almendras', 'Aceite de oliva']).
-dieta('Dieta Anti-inflamatoria', ['Salmón', 'Brócoli', 'Frutos rojos', 'Aceite de oliva', 'Aguacate']).
-dieta('Dieta Baja en Carbohidratos', ['Pechuga de pollo', 'Espinacas', 'Huevos', 'Aguacate', 'Salmón']).
+dieta('Dieta para Diabetes', ['Manzana', 'Pechuga de pollo', 'Espinacas', 'Yogur natural', 'Brócoli', 'Almendras', 'Aguacate', 'Atún', 'Piña', 'Apio', 'Cebolla', 'Tomate', 'Pepino', 'Guisantes', 'Habas']).
+dieta('Dieta para Hipertensión', ['Arroz integral', 'Espinacas', 'Pechuga de pollo', 'Plátano', 'Brócoli', 'Almejas', 'Guisantes', 'Cebolla', 'Tomate', 'Requesón', 'Lima', 'Peras', 'Apio']).
+dieta('Dieta para Colesterol alto', ['Espinacas', 'Manzana', 'Yogur natural', 'Salmón', 'Avena', 'Almendras', 'Requesón', 'Coco', 'Aguacate', 'Kiwis', 'Moras', 'Fresas', 'Pistachos']).
+dieta('Dieta Balanceada', ['Arroz integral', 'Pechuga de pollo', 'Manzana', 'Huevos', 'Quinoa', 'Pistachos', 'Brócoli', 'Fresas', 'Menta', 'Garbanzos', 'Tomate', 'Aguacate']).
+dieta('Dieta para Pérdida de Peso', ['Espinacas', 'Brócoli', 'Huevos', 'Manzana', 'Leche descremada', 'Tomate', 'Cebolla', 'Fresas', 'Almendras', 'Pepino', 'Guisantes', 'Lima', 'Peras']).
+dieta('Dieta para Aumento de Masa Muscular', ['Pechuga de pollo', 'Huevos', 'Quinoa', 'Leche descremada', 'Salmón', 'Garbanzos', 'Requesón', 'Almendras', 'Tofu', 'Aguacate', 'Pistachos', 'Coco']).
+dieta('Dieta Vegana', ['Avena', 'Almendras', 'Espinacas', 'Quinoa', 'Brócoli', 'Guisantes', 'Habas', 'Frutos rojos', 'Pepino', 'Lentejas', 'Tomate', 'Fresas', 'Moras']).
+dieta('Dieta Mediterránea', ['Salmón', 'Aceite de oliva', 'Brócoli', 'Manzana', 'Almendras', 'Tomate', 'Fresas', 'Requesón', 'Moras', 'Pistachos', 'Lima', 'Kiwis']).
+dieta('Dieta DASH', ['Espinacas', 'Pechuga de pollo', 'Yogur natural', 'Brócoli', 'Arroz integral', 'Plátano', 'Lentejas', 'Almejas', 'Menta', 'Cebolla', 'Peras', 'Fresas']).
+dieta('Dieta Cetogénica', ['Pechuga de pollo', 'Huevos', 'Aguacate', 'Almendras', 'Aceite de oliva', 'Pistachos', 'Requesón', 'Salmón', 'Leche de almendra', 'Coco', 'Pepino', 'Zanahoria']).
+dieta('Dieta Anti-inflamatoria', ['Salmón', 'Brócoli', 'Frutos rojos', 'Aceite de oliva', 'Aguacate', 'Coco', 'Kiwis', 'Moras', 'Col rizada', 'Cebolla', 'Mandarina', 'Ananas']).
+dieta('Dieta Baja en Carbohidratos', ['Pechuga de pollo', 'Espinacas', 'Huevos', 'Aguacate', 'Salmón', 'Almendras', 'Cebolla', 'Pepino', 'Tomate', 'Requesón', 'Peras', 'Fresas', 'Guisantes']).
+
+
 
 % Hechos: Condiciones de salud y sus dietas recomendadas
 condicion_dieta('Diabetes', 'Dieta para Diabetes').
